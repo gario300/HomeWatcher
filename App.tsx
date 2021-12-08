@@ -1,21 +1,54 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import styles from "./src/shared/Styles/safe_area.style"
+import { SafeAreaView } from 'react-native-safe-area-context';
+import AppContainer from "./src/navigation"
+import * as Font from 'expo-font';
+import { initializeApp } from "firebase/app";
+import Constants from 'expo-constants'
+import { ThemeProvider } from "react-native-rapi-ui";
+const firebaseConfig = {
+  apiKey: Constants!.manifest!.extra!.apiKey,
+  authDomain: Constants!.manifest!.extra!.authDomain,
+  projectId: Constants!.manifest!.extra!.projectId,
+  storageBucket: Constants!.manifest!.extra!.storageBucket,
+  messagingSenderId: Constants!.manifest!.extra!.messagingSenderId,
+  appId: Constants!.manifest!.extra!.appId
+};
+initializeApp(firebaseConfig);
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+  const [loading, setLoading] = useState(false)
+  useEffect(() => {
+    loadFonts() 
+  }, []);
+  
+  const loadFonts = async() => {
+    try {
+      await Font.loadAsync({
+        'Regular': require('./assets/fonts/Quantico-Regular.otf'),
+        'Medium': require('./assets/fonts/Quantico-Bold.otf'),
+        'Bold': require('./assets/fonts/Quantico-Bold.otf'),
+        'SemiBold': require('./assets/fonts/Quantico-BoldItalic.otf'),
+        'Italic': require('./assets/fonts/Quantico-Italic.otf'),
+        'Light': require('./assets/fonts/Quantico-Italic.otf'),
+        'LightItalic': require('./assets/fonts/Quantico-Italic.otf')
+      });
+      setLoading(true) 
+    } catch (e) {
+      setLoading(false)
+    }
+  }
+  if (!loading) {
+    return null
+  }
+  return(
+    <SafeAreaView style={styles.droidSafeArea}>
+      <ThemeProvider
+        theme='dark'
+      >
+        <AppContainer/>
+      </ThemeProvider>
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
