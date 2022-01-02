@@ -2,25 +2,23 @@ class Validator{
   constructor(){
   }
 
-  vStringAlpha(key, value){
+  vStringAlpha(key: string, value:string){
     if(!/^[A-Za-z]+$/.test(value)){
-      console.log(key, value)
       return {
         status: false,
-        message: `${key} can't to have specials characters o numbers`
+        message: `${key} no puede tener caracteres especiales`
       }
     }
     return{
       status: true
     }
-    
   }
 
-  vNotVoid(key, value){
-    if(value == null || value == '' || value.length == 0){
+  vNotVoid(key: string , value: string){
+    if(value == '' || value.length == 0){
       return {
         status: false,
-        message: `${key} can't to be a empty value`
+        message: `${key} no puede ser un valor vacio`
       }
     }
     return {
@@ -28,7 +26,7 @@ class Validator{
     }
   }
 
-  vEmail(value){
+  vEmail(value:string){
      if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(value)){
         return{ 
           status: true
@@ -37,7 +35,7 @@ class Validator{
 
     return{
       status: false,
-      message:'Please indroduce a valid email adress'
+      message:'Porfavor introduce una dirección de email valida'
     }
   }
 }

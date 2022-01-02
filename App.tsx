@@ -3,9 +3,11 @@ import styles from "./src/shared/Styles/safe_area.style"
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AppContainer from "./src/navigation"
 import * as Font from 'expo-font';
-import { initializeApp } from "firebase/app";
-import Constants from 'expo-constants'
 import { ThemeProvider } from "react-native-rapi-ui";
+import { Provider } from 'react-redux';
+import configureStore from './src/redux/store';
+import Constants from 'expo-constants'
+import { initializeApp } from "firebase/app";
 const firebaseConfig = {
   apiKey: Constants!.manifest!.extra!.apiKey,
   authDomain: Constants!.manifest!.extra!.authDomain,
@@ -15,13 +17,12 @@ const firebaseConfig = {
   appId: Constants!.manifest!.extra!.appId
 };
 initializeApp(firebaseConfig);
-
 export default function App() {
   const [loading, setLoading] = useState(false)
   useEffect(() => {
     loadFonts() 
   }, []);
-  
+  const store = configureStore() 
   const loadFonts = async() => {
     try {
       await Font.loadAsync({
@@ -46,7 +47,11 @@ export default function App() {
       <ThemeProvider
         theme='dark'
       >
-        <AppContainer/>
+        <Provider
+          store={ store }
+        >
+          <AppContainer/>
+        </Provider>
       </ThemeProvider>
     </SafeAreaView>
   );

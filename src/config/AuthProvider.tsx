@@ -7,26 +7,21 @@ const AuthContext = createContext(false);
 
 const AuthProvider = (props:any) => {
 	// user null = loading
-  const [user, setUser] = useState<boolean>(false);
+  const [user, setUser] = useState(false);
 
 	useEffect(() => {
 		checkLogin();
 	}, []);
 
 	function checkLogin() {
-    const auth = getAuth();
-    onAuthStateChanged(auth, u => {
-      if (u != null) {
-        setUser(true)
-      } else {
-        setUser(false)
-      }
+    onAuthStateChanged(getAuth(), u => {
+      setUser(u)
     })
 	}
 
 	return (
 		<AuthContext.Provider
-			value={user}
+			value={{user}}
 		>
 			{props.children}
 		</AuthContext.Provider>

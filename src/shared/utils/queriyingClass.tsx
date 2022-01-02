@@ -1,176 +1,129 @@
-import * as firebase from 'firebase';
-
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  query, 
+  where, 
+  getDocs,
+  deleteDoc,
+  doc
+} from 'firebase/firestore';
+interface clauseTypes {
+  where: string;
+  operator: any;
+  clause: string
+}
 class QueriyingClass {
   constructor(){}
 
-  addData = (collection = '', obj = {}) => {
+  addDataWithId = (collectionName:string = '', obj = {}, id : string) => {
     return new Promise (async( resolve, reject ) => {
       try{
-        await firebase.firestore().collection(collection)
-          .add(obj)
-        resolve({ text: 'Item added', type: true })
-      } catch ( e ) {
-        reject({ text: e.message, type: false })
+        const db = getFirestore()
+        await addDoc(collection(db, collectionName), obj)
+        resolve('Su cuenta ha sido registrada con exito, ahora puede acceder con su email y contraseña')
+      } catch ( e:any ) {
+        reject({ message: e.message, type: false })
       }
     })
   }
 
-  editData = ( collection = '' , obj = {}, doc = '' ) => {
-    return new Promise ( async( resolve, reject ) => {
-      try {
-        await firebase.firestore()
-          .collection(collection)
-          .doc(doc)
-          .update(
-            obj
-          )
-        resolve({ text: 'Item updated', type: true })
-      } catch (e) {
-        reject({ text: e.message, type: false })
+  addData = (collectionName = '', obj = {}) => {
+    return new Promise (async( resolve, reject ) => {
+      try{
+        const db = getFirestore()
+        await addDoc(collection(db, collectionName), obj)
+        resolve('Su cuenta ha sido registrada con exito, ahora puede acceder con su email y contraseña')
+      } catch ( e:any ) {
+        reject({ message: e.message, type: false })
       }
     })
   }
 
-  deleteData = ( collection = '', doc= '' ) => {
-    return new Promise( async( resolve, reject ) => {
-      try {
-        await firebase.firestore()
-          .collection(collection)
-          .doc(doc)
-          .delete()
-        resolve({ text: 'Item updated', type: true })
-      } catch (e) {
-        reject({ text: e.message, type: false })
-      }
-    })
-  } 
-
-  deleteMassiveData = ( collection = '', clause = {} ) => {
-    return new Promise( async( resolve, reject ) => {
-      try {
-        await firebase.firestore()
-          .collection(collection)
-          .where(clause.where, clause.comparison, clause.clause)
-          .delete()
-        resolve({ text: 'Item updated', type: true })
-      } catch (e) {
-        reject({ text: e.message, type: false })
-      }
-    })
-  }
-  getByDoc = ( collection = '' , doc = '' ) => {
-    return new Promise ( async( resolve, reject ) => {
-      try {
-        await firebase.firestore()
-          .collection(collection)
-          .doc(doc)
-          .get().then( response => { 
-          if (!response.exists) {
-            reject([])
-          } else {
-            resolve(response.data()) 
-          }
-        })
-
-      } catch (e) {
-        reject({ text: e.message, type: false })
+  deleteData = (collectionName = '', collectionId = '') => {
+    return new Promise (async( resolve, reject ) => {
+      try{
+        const db = getFirestore()
+        await deleteDoc(doc(db, collectionName, collectionId))
+        resolve('deleted')
+      } catch ( e : any ) {
+        reject({ message: e.message, type: false })
       }
     })
   }
 
-  findData = ( collection = '' , clause ) => {
-    return new Promise ( async( resolve, reject ) => {
-      try {
-        await firebase.firestore()
-          .collection(collection)
-          .where(clause.where, clause.comparison, clause.clause)
-          .get().then( response => { 
-          if (response.empty) {
-            resolve([])
-          } else {
-            const finalData = []
-            response.forEach(function(doc) {
-              let newObj = {}
-              newObj = {
-                ...doc.data(),
-                id: doc.id
-              }
-              
-              finalData.push(newObj)
-            });
-            resolve(finalData)
-          }
-        })
-
-      } catch (e) {
-        reject({ text: e.message, type: false })
-      }
+  findByOne = (collectionName:string = '', clauseObj : clauseTypes) => {
+    return new Promise(async( resolve, reject) =>{
+      const db = getFirestore()
+      const q = query(collection(db, collectionName), where(clauseObj.where, clauseObj.operator, clauseObj.clause));
+      const querySnapshot = await getDocs(q);
+       
+      if (querySnapshot.empty) {
+        resolve([])
+        return
+      } 
+      let finalData : any[] = []
+      querySnapshot.forEach((doc) => {
+        let newObj = {}
+        newObj = {
+          ...doc.data(),
+          id: doc.id
+        }     
+        finalData.push(newObj)
+      })
+      resolve(finalData)
     })
   }
 
-  tripleFind = ( collection = '' , clause ) => {
-    return new Promise ( async( resolve, reject ) => {
-      try {
-        const elements = await firebase.firestore()
-          .collection(collection)
-          .where(clause[0].where, clause[0].comparison[0], clause[0].clause)
-          .where(clause[1].where, clause[1].comparison[1], clause[1].clause)
-          .where(clause[2].where, clause[2].comparison[2], clause[2].clause)
-          .get().then( response => { 
-          if (response.empty) {
-            
-            resolve([])
-          } else {
-            const finalData = []
-            response.forEach(function(doc) {
-              let newObj = {}
-              newObj = {
-                ...doc.data(),
-                id: doc.id
-              }
-              
-              finalData.push(newObj)
-            });
-            resolve(elements.data())
-          }
-        })
-
-      } catch (e) {
-        reject({ text: e.message, type: false })
-      }
+  findByTwo = (collectionName:string = '', clauseArr : clauseTypes[]) => {
+    return new Promise(async( resolve, reject) =>{
+      const db = getFirestore()
+      const q = query(collection(db, collectionName), 
+        where(clauseArr[0].where, clauseArr[0].operator, clauseArr[0].clause), 
+        where(clauseArr[1].where, clauseArr[1].operator, clauseArr[1].clause)
+      );
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
+        resolve([])
+        return
+      } 
+      let finalData : any[] = []
+      querySnapshot.forEach((doc) => {
+        let newObj = {}
+        newObj = {
+          ...doc.data(),
+          id: doc.id
+        }     
+        finalData.push(newObj)
+      })
+      resolve(finalData)
     })
   }
 
-  doubleFind = ( collection = '' , clause ) => {
-    return new Promise ( async( resolve, reject ) => {
-      try {
-        await firebase.firestore()
-          .collection(collection)
-          .where(clause[0].where, clause[0].comparison, clause[0].clause)
-          .where(clause[1].where, clause[1].comparison, clause[1].clause)
-          .get().then( response => { 
-          if (response.empty) {          
-            resolve([])
-          } else {
-            const finalData = []
-            response.forEach(function(doc) {
-              let newObj = {}
-              newObj = {
-                ...doc.data(),
-                id: doc.id
-              }
-              
-              finalData.push(newObj)
-            });
-            resolve(finalData)
-          }
-        })
-
-      } catch (e) {
-        reject({ text: e.message, type: false })
-      }
+  findByThree = (collectionName:string = '', clauseArr : clauseTypes[]) => {
+    return new Promise(async( resolve, reject) =>{
+      const db = getFirestore()
+      const q = query(collection(db, collectionName), 
+        where(clauseArr[0].where, clauseArr[0].operator, clauseArr[0].clause), 
+        where(clauseArr[1].where, clauseArr[1].operator, clauseArr[1].clause),
+        where(clauseArr[2].where, clauseArr[2].operator, clauseArr[2].clause)
+      );
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
+        resolve([])
+        return
+      } 
+      let finalData : any[] = []
+      querySnapshot.forEach((doc) => {
+        let newObj = {}
+        newObj = {
+          ...doc.data(),
+          id: doc.id
+        }     
+        finalData.push(newObj)
+      })
+      resolve(finalData)
     })
   }
 }
-
 export default new QueriyingClass

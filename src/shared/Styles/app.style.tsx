@@ -35,8 +35,6 @@ const appText = {
     fontFamily: AppTexts.textFont,
     color: AppTheme.textColor,
     fontSize: AppTexts.textFontSize,
-    fontWeight: "600",
-    textAlign: 'left'
 }
 
 const appTextInput = {
@@ -50,37 +48,32 @@ const appTextInput = {
 const appTextMinor = {
     fontFamily: AppTexts.textFont,
     color: AppTheme.textColor,
-    fontSize: AppTexts.textFontSize * 0.8,
-    textAlign: 'left'
+    fontSize: AppTexts.textFontSize * 0.8
 }
 
 const appTitleLarge = {
     fontFamily: AppTexts.titleFont,
     color: AppTheme.textColor,
-    fontSize: AppTexts.titleFontSize * 1.4,
-    textAlign: 'left'
+    fontSize: AppTexts.titleFontSize * 1.4
 }
 
 const appTitle = {
     fontFamily: AppTexts.titleFont,
     color: AppTheme.textColor,
-    fontSize: AppTexts.titleFontSize,
-    textAlign: 'left'
+    fontSize: AppTexts.titleFontSize
 }
 
 const appTextMedium = {
     fontFamily: AppTexts.mediumFont,
     color: AppTheme.textColor,
-    fontSize: AppTexts.textFontSize,
-    textAlign: 'left'
+    fontSize: AppTexts.textFontSize
 }
 
 const appSubTitle = {
     fontFamily: AppTexts.titleFont,
     color: AppTheme.textColor,
     lineHeight: AppTexts.subTitleFontSize * 1.3,
-    fontSize: AppTexts.subTitleFontSize,
-    textAlign: 'left'
+    fontSize: AppTexts.subTitleFontSize
 }
 
 const StylesVariables = { 
